@@ -67,6 +67,31 @@ Classical K-Means is simple but memory-bound and distance-heavy. On modern GPUs,
 └── tests/
     └── test_kmeans.cpp
 ```
+
+
+## Requirements
+- **CUDA** 11.4+ (tested on 11.8/12.x)
+- **C++17** compiler (GCC 9+/Clang 12+)
+- (Optional) Python 3.8+ for dataset generation scripts
+  
+## Build and Run
+### Steps
+```bash
+    To be added 
+```
+## 📄 Input Format
+
+The input file should be a **plain text file** with the following structure:
+
+```
+N d k
+x₁₁ x₁₂ ... x₁d
+x₂₁ x₂₂ ... x₂d
+...
+xN₁ xN₂ ... xNd
+```
+
+
 ## Implementation Notes
 
 - **SoA layout** ensures coalesced memory access  
