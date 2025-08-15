@@ -49,18 +49,16 @@ Classical K-Means is simple but memory-bound and distance-heavy. On modern GPUs,
 ├── TestGenerator.py           # Generates random datasets for testing
 │
 ├── input/                    # Test dataset folder (dense text format)
-│   ├── dataset_1e6.txt       # Dataset with 1 million points
-│   ├── dataset_3e5.txt       # Dataset with 300k points
-│   ├── dataset_5e5.txt       # Dataset with 500k points
-│   └── dataset_7e5.txt       # Dataset with 700k points
+│   ├── dataset_1000.txt       # Dataset with 1000 points
+│   ├── dataset_10k.txt       # Dataset with 10K points
+│   ├── dataset_20k.txt       # Dataset with 20K points
 │
 ├── cuML/                     # NVIDIA cuML-based implementation using cuBLAS
 │   ├── km_cu.py              # cuML KMeans implementation for performance comparison
 │   ├── input/                # Test dataset folder (same format as top-level input/)
-│   │   ├── dataset_1e6.txt
-│   │   ├── dataset_3e5.txt
-│   │   ├── dataset_5e5.txt
-│   │   └── dataset_7e5.txt
+│     ├── dataset_1000.txt       # Dataset with 1000 points
+│     ├── dataset_10k.txt       # Dataset with 10K points
+│     ├── dataset_20k.txt       # Dataset with 20K points
 │   └── script.sh             # Runs main.cu and km_cu.py for comparison on cuML
 ```
 **Descriptions:**
