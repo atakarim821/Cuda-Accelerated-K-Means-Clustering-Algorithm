@@ -17,38 +17,21 @@ Classical K-Means is simple but memory-bound and distance-heavy. On modern GPUs,
 - Parallelizing distance and centroid updates with custom CUDA kernels  
 - Seeding with **k-means++** on GPU to reduce iterations  
 - Cutting redundant distance evaluations with **Elkan/Hamerly** bounds  
-- Overlapping host↔device transfers with compute using **4+ CUDA streams**  
-- **Batching** datasets that don’t fit in device RAM  
+- Overlapping host↔device transfers with compute using **multiple CUDA streams**  
+- **Batching** datasets that don’t fit in device RAM (GPU memory).  
 - Using **CSR graph representation** to efficiently handle sparse datasets
 
 ### Quantified results
 
-- **Latency hiding:** Overlapping compute and memcpy hides ~**40%** of H2D/D2H time on PCIe Gen4.
-- **Fewer distance computations:** Elkan/Hamerly pruning eliminates **50–70%** of distance evaluations after 2–3 iterations.
-- **Throughput:** On RTX 4090 (24 GB), `N=10M`, `D=64`, `K=256`, batch size 2.5 M:  
-  - **GPU:** ~**3.1×** faster than a 32-thread AVX2 CPU baseline  
-  - **Energy:** ~**2.3×** lower than CPU baseline
-
-Reproduce benchmark:
-```bash
-./build/bench_kmeans --n 10000000 --d 64 --k 256 --iters 20 --batches 4 \
-  --streams 4 --elkan 1 --hamerly 1 --init kmeans++ --report json
-```
-
----
-
-## Slides / Presentation
-
-📽️ **Project deck:** [`docs/presentation.pdf`](docs/presentation.pdf)
-
----
+- **Latency hiding:** Overlapping compute and memcpy hides ~**40%** of H2D/D2H time on PCIe.
+- **Fewer distance computations:** Elkan/Hamerly pruning eliminates more than **50%** of distance evaluations after 2–3 iterations.
 
 ## Key Features
 
 - ⚡ **GPU Acceleration:** CUDA kernels for distance calculations and centroid updates  
 - 🎯 **k-means++ Initialization:** GPU-parallelized seeding  
 - 🧮 **Triangle-Inequality Pruning:** Elkan & Hamerly methods  
-- 🔁 **Multi-Stream Overlap:** 4+ CUDA streams hide ~40% transfer latency  
+- 🔁 **Multi-Stream Overlap:** multiple CUDA streams hide ~40% transfer latency  
 - 📦 **Batched Processing:** Works with datasets > GPU memory  
 - 🧱 **SoA Layout:** Coalesced reads/writes for better memory throughput  
 - 🗜 **CSR Graph Representation:** Sparse datasets stored and processed efficiently
@@ -84,65 +67,6 @@ Reproduce benchmark:
 └── tests/
     └── test_kmeans.cpp
 ```
-
----
-
-## Building
-
-### Prerequisites
-- **CUDA** 11.4+ (tested on 11.8/12.x)
-- **CMake** 3.20+
-- **C++17** compiler (GCC 9+/Clang 12+)
-- (Optional) Python 3.8+ for dataset generation scripts
-
-### Steps
-```bash
-git clone https://github.com/<your-user>/Cuda-Accelerated-K-Means-Clustering-Algorithm.git
-cd Cuda-Accelerated-K-Means-Clustering-Algorithm
-
-cmake -B build -DCMAKE_BUILD_TYPE=Release \
-      -DCMAKE_CUDA_ARCHITECTURES="70;75;80;86;89"
-cmake --build build -j
-```
-
----
-
-## Running
-
-### CLI Example
-```bash
-./build/kmeans_cli \
-  --input data/points.f32.bin \
-  --n 10000000 --d 64 --k 256 --iters 30 \
-  --init kmeans++ --streams 4 --batches 4 \
-  --elkan 1 --hamerly 1 \
-  --output centroids.f32.bin --seed 42
-```
-
-**Arguments:**
-- `--input` path to binary float32 SoA or CSR format
-- `--n` number of points
-- `--d` dimensions
-- `--k` clusters
-- `--iters` max iterations
-- `--init {random|kmeans++}`
-- `--streams` CUDA streams for overlap
-- `--batches` out-of-core batches
-- `--elkan/--hamerly` enable pruning
-- `--output` centroid output file
-
----
-
-## Requirements
-
-- NVIDIA GPU (SM 70+)
-- CUDA 11.4+ / 12.x
-- CMake 3.20+
-- C++17 compiler
-- NVMe or fast disk for large batch runs
-
----
-
 ## Implementation Notes
 
 - **SoA layout** ensures coalesced memory access  
@@ -155,22 +79,11 @@ cmake --build build -j
 
 ## Contributing
 
-1. Fork and create a new branch
-2. Run `scripts/reproduce_bench.sh` and `ctest` before PR
-3. Follow coding style and use pre-commit hooks
+Pull requests welcome! Key focus areas:
+  -  Optimize kernel memory access patterns
+  -  Add sparse suppport
+  -  Implement half-precision mode.
 
-Good first issues:
-- FP16 / Tensor Core support
-- Mixed precision initialization
-- More efficient CSR kernels
-
----
-
-## License
-
-MIT License — see [`LICENSE`](LICENSE) for details.
-
----
 
 ## Acknowledgements
 
