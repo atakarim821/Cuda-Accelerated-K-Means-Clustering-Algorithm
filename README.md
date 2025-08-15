@@ -82,11 +82,6 @@ Classical K-Means is simple but memory-bound and distance-heavy. On modern GPUs,
 - **C++17** compiler (GCC 9+/Clang 12+)
 - (Optional) Python 3.8+ for dataset generation scripts
   
-## Build and Run
-### Steps
-```bash
-    To be added 
-```
 ## 📄 Input Format
 
 The input file should be a **plain text file** with the following structure:
