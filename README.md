@@ -35,38 +35,46 @@ Classical K-Means is simple but memory-bound and distance-heavy. On modern GPUs,
 - 📦 **Batched Processing:** Works with datasets > GPU memory  
 - 🧱 **SoA Layout:** Coalesced reads/writes for better memory throughput  
 - 🗜 **CSR Graph Representation:** Sparse datasets stored and processed efficiently
-
----
-
 ## Directory Structure
 
 ```
 .
-├── CMakeLists.txt
-├── include/
-│   ├── kmeans.hpp
-│   ├── device_utils.cuh
-│   ├── bounds.cuh
-│   └── init_kmeanspp.cuh
-├── src/
-│   ├── kmeans.cu
-│   ├── init_kmeanspp.cu
-│   ├── bounds.cu
-│   ├── batching.cu
-│   └── kmeans_cpu_ref.cpp
-├── apps/
-│   ├── kmeans_cli.cpp
-│   └── bench_kmeans.cpp
-├── data/
-│   └── (sample datasets)
-├── docs/
-│   └── presentation.pdf
-├── scripts/
-│   ├── gen_data.py
-│   └── reproduce_bench.sh
-└── tests/
-    └── test_kmeans.cpp
+├── Makefile                  # Builds the CUDA implementation (main.cu)
+├── main.cu                   # Main CUDA-accelerated K-Means implementation
+├── km.py                     # Scikit-learn KMeans implementation for baseline comparison
+├── checker.py                # Compares cluster assignments between CUDA and Scikit-learn outputs
+├── checker.sh                # Shell script to check closeness of CUDA vs Scikit-learn assignments
+├── script.sh                 # Runs both main.cu and km.py over datasets in input/ for comparison
+├── run.sh                    # Generates random test cases and tests them with main.cu & km.py
+├── TestGenerator.py           # Generates random datasets for testing
+│
+├── input/                    # Test dataset folder (dense text format)
+│   ├── dataset_1e6.txt       # Dataset with 1 million points
+│   ├── dataset_3e5.txt       # Dataset with 300k points
+│   ├── dataset_5e5.txt       # Dataset with 500k points
+│   └── dataset_7e5.txt       # Dataset with 700k points
+│
+├── cuML/                     # NVIDIA cuML-based implementation using cuBLAS
+│   ├── km_cu.py              # cuML KMeans implementation for performance comparison
+│   ├── input/                # Test dataset folder (same format as top-level input/)
+│   │   ├── dataset_1e6.txt
+│   │   ├── dataset_3e5.txt
+│   │   ├── dataset_5e5.txt
+│   │   └── dataset_7e5.txt
+│   └── script.sh             # Runs main.cu and km_cu.py for comparison on cuML
 ```
+**Descriptions:**
+- **Makefile** — Compilation instructions for CUDA code.  
+- **main.cu** — Core CUDA implementation of K-Means.  
+- **km.py** — Baseline K-Means using Scikit-learn for accuracy comparison.  
+- **checker.py** — Reads CUDA and Scikit-learn outputs, compares assignments for similarity.  
+- **checker.sh** — Automates comparison checks between CUDA and Scikit-learn outputs.  
+- **script.sh** — Iterates through datasets in `input/` and runs both CUDA and Scikit-learn implementations.  
+- **run.sh** — Generates random test cases (via `TestGenerator.py`) and evaluates both implementations.  
+- **TestGenerator.py** — Creates synthetic datasets with specified dimensions, clusters, and points.  
+- **input/** — Pre-generated test datasets for evaluation.  
+- **cuML/** — Folder containing NVIDIA cuML (GPU library) K-Means implementation and its testing scripts.
+
 
 
 ## Requirements
